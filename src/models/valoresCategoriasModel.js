@@ -23,22 +23,31 @@ const ValoresCaracteristica = {
 
   getByProducto: (id_imagen, callback) => {
     db.query(
-      "SELECT v.id_valor, s.nombre_subcaracteristica, v.valor FROM valores_caracteristicas v JOIN subcaracteristica s ON v.id_subcaracteristica = s.id_subcaracteristica WHERE v.id_imagen = ?",
+      `SELECT v.id_valor, s.nombre_subcaracteristica, v.valor 
+       FROM valores_caracteristicas v 
+       JOIN subcaracteristica s ON v.id_subcaracteristica = s.id_subcaracteristica 
+       WHERE v.id_imagen = ?`,
       [id_imagen],
       callback
     );
   },
-
-    create: async function(valoresData) {
-      const sql = "INSERT INTO valores_caracteristicas (id_imagen, id_subcaracteristica, valor, url_imagen_caracteristica) VALUES (?, ?, ?, ?)";
-      const [result] = await db.execute(sql, [
-        valoresData.id_imagen || null, // Asegúrate de que no sea undefined
-        valoresData.id_subcaracteristica || null, // Asegúrate de que no sea undefined
-        valoresData.valor || null, // Asegúrate de que no sea undefined
-        valoresData.url_imagen_caracteristica || null // Asegúrate de que no sea undefined
-      ]);
-      return result;
-    }
+  // ✅ Corrección aquí: definir correctamente la función create
+  create: async function(valoresData) {
+    const sql = `
+      INSERT INTO valores_caracteristicas 
+      (id_subcaracteristica, valor, url_imagen_caracteristica, id_imagen) 
+      VALUES (?, ?, ?, ?)
+    `;
+    const [result] = await db.execute(sql, [
+      valoresData.id_subcaracteristica || null,
+      valoresData.valor || null,
+      valoresData.url_imagen_caracteristica || null,
+      valoresData.id_imagen || null
+    ]);
+    return result;
+  }
 };
+  
+
 
 module.exports = ValoresCaracteristica;

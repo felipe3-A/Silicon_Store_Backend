@@ -62,23 +62,38 @@ controller.getValoresByProducto = (req, res) => {
 };
 
 controller.createValorCaracteristica = async (req, res) => {
-  const {  id_subcaracteristica, valor } = req.body;
-
-  // Verifica que  estos son estados estancados nesecito realizar estos canales de informacion que nesecitan esto, los paramentros parámetros requeridos estén presentes
-
-  if (!id_subcaracteristica) {
-    return res.status(400).json({ error: "El parámetro id_subcaracteristica es requerido." });
-  }
-  if (!valor) {
-    return res.status(400).json({ error: "El parámetro valor es requerido." });
-  }
-
   try {
+    console.log("Datos recibidos en req.body:", req.body);
+    
+    const { id_imagen, id_subcaracteristica, valor } = req.body;
+
+    if (!id_imagen || !id_subcaracteristica || !valor) {
+      return res.status(400).json({ error: "Todos los campos son requeridos." });
+    }
+
+    const producto = await ImagenService.listImagesById(id_imagen);
+    if (!producto || producto.length === 0) {
+      return res.status(404).json({ error: `El producto con ID ${id_imagen} no existe.` });
+    }
+
+    const sub =  SubModel.getById(id_subcaracteristica);
+    if (!sub || sub.length === 0) {
+      return res.status(404).json({ error: `La subcaracterística con ID ${id_subcaracteristica} no existe.` });
+    }
+
+
+    const url_imagen_caracteristica = req.file
+      ? `http://localhost:3000/uploads_caracteristica/${req.file.filename}`
+      : null;
+
+    if (!req.file) {
+      return res.status(400).json({ message: "La imagen es requerida." });
+    }
     const nuevoValorCaracteristica = {
       id_imagen,
       id_subcaracteristica,
       valor,
-      url_imagen: req.file ? `http://localhost:3000/uploads_caracteriticas/${req.file.filename}` : null
+      url_imagen_caracteristica
     };
 
     const result = await valoresCaracteristicaService.createValorCaracteristica(nuevoValorCaracteristica);
@@ -96,5 +111,6 @@ controller.createValorCaracteristica = async (req, res) => {
     });
   }
 };
+
 
 module.exports =  controller

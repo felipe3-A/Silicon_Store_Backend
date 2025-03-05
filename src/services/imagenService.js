@@ -99,8 +99,6 @@ const crearGaleria = async (galeriaData) => {
   return result;
 };
 
-
-
 const editarProducto = async (id_imagen, nuevoProducto) => {
   try {
       const result = await Imagen.update(id_imagen, nuevoProducto); // Asegúrate de que esta línea esté correcta
@@ -120,8 +118,6 @@ const eliminarProducto = async (id_imagen) => {
   }
 };
 
-
-
 async function obttenerGaleriaId(id_galeria) {
   try {
     const galeriaArray = await Imagen.findById(id_galeria);
@@ -137,7 +133,6 @@ async function obttenerGaleriaId(id_galeria) {
     throw error;
   }
 }
-
 
 const listImagesByCategoria = function (categoriaId) {
   const sql = `SELECT * FROM imagenes WHERE id_categoria = ?`;

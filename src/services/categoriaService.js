@@ -39,9 +39,9 @@ const eliminarCategoria = async (id_categoria) => {
   }
 };
 
-const listarrProductoCategoria = async (id_categoria) => {
+const listarProductosPorCategoria = async (id_categoria) => {
   try {
-    const [productos] = await Categorias.findProductsByBrand(id_categoria);
+    const [productos] = await Categorias.findProductsByCategory(id_categoria);
     return productos;
   } catch (error) {
     throw error;
@@ -53,5 +53,5 @@ module.exports = {
   listarCategorias,
   editarCategoria,
   eliminarCategoria,
-  listarrProductoCategoria,
+  listarProductosPorCategoria,
 };

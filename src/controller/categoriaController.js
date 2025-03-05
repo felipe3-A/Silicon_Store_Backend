@@ -79,34 +79,28 @@ controller.listarCategorias = async (req, res) => {
 };
 // Listar productos por categoria
 // Controlador para listar categorías con productos
-controller.listarCategoriasConProductos = async (req, res) => {
+controller.listarProductosPorCategoria = async (req, res) => {
+  const { id_categoria } = req.params;
+  
   try {
-    const categorias = await Categoria.listarCategorias();
+    const productos = await Categoria.listarProductosPorCategoria(id_categoria);
 
-    if (!categorias || categorias.length === 0) {
-      return res.status(404).json({ message: "No se encontraron categorías." });
+    if (!productos || productos.length === 0) {
+      return res.status(404).json({ message: "No se encontraron productos para esta categoría." });
     }
 
-    // Para cada categoría, obtener los productos asociados
-    const categoriasConProductos = await Promise.all(categorias.map(async (categoria) => {
-      const productos = await Categoria.listarrProductoCategoria(categoria.id_categoria);
-      return {
-        ...categoria,
-        productos: productos || [] // Agregar productos a la categoría
-      };
-    }));
-
     res.status(200).json({
-      message: "Categorías y productos listados correctamente",
-      data: categoriasConProductos,
+      message: "Productos listados correctamente",
+      data: productos,
     });
   } catch (error) {
     res.status(500).json({
-      message: "Error al listar las categorías y productos",
+      message: "Error al listar productos por categoría",
       error: error.message,
     });
   }
 };
+
 
 // Editar categorias
 

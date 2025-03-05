@@ -15,10 +15,9 @@ const getCaracteristicaById = async() => {
 };
 
 const createCaracteristica = async (caracteristica) => {
- const query ="INSERT INTO caracteristica (nombre_caracteristica,id_categoria) VALUES (?,?)"
+ const query ="INSERT INTO caracteristica (nombre_caracteristica) VALUES (?)"
  const values =[
     caracteristica.nombre_caracteristica || null,
-    caracteristica.id_categoria || null
 ];
 
   const [result] = await db.execute(query, values);

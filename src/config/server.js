@@ -34,10 +34,11 @@ const perfilRoutes = require("../routes/perfilRoutes")
 const caracteristicaRouter = require("../routes/caracteristicaRoutes")
 const subCaracteristICArOUTES =  require("../routes/subCaracteristica")
 const valoresCaracteristica = require("../routes/valoresCaracteristicasRoutes")
-
+const resenasRoutes = require("../routes/reseñasRoutes")
 
 const reporteRoutes = require("../routes/reportesRoutes")
 appSigoSet.use(caracteristicaRouter)
+appSigoSet.use(resenasRoutes)
 appSigoSet.use(subCaracteristICArOUTES)
 appSigoSet.use(valoresCaracteristica)
 appSigoSet.use(productosRoutes)
@@ -55,6 +56,8 @@ appSigoSet.use(ModuloxPerfil)
 appSigoSet.use(solicitudRoutes)
 appSigoSet.use(perfilRoutes)
 
+appSigoSet.use('/api/valor', valoresCaracteristica);
+appSigoSet.use("/uploads_caracteristica", express.static(path.join(__dirname, "../../images_caracteristica")));
 
 appSigoSet.use('/api/imagenes', imageRoutes);
 appSigoSet.use("/uploads", express.static(path.join(__dirname, "../../images")));

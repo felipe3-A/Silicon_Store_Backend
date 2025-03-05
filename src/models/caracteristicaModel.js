@@ -7,9 +7,9 @@ const Caracteristica = {
   getById: (id) => {
     db.query("SELECT * FROM caracteristica WHERE id_caracteristica = ?", [id]);
   },
-  create: (nombre, id_categoria) => {
-    db.query("INSERT INTO caracteristica (nombre_caracteristica, id_categoria) VALUES (?, ?)", 
-    [nombre, id_categoria]);
+  create: (nombre) => {
+    db.query("INSERT INTO caracteristica (nombre_caracteristica) VALUES (?)", 
+    [nombre]);
   },
     // Nueva función para obtener características por categoría
     getByCategoria: (id_categoria, callback) => {

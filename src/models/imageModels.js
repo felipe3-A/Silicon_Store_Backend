@@ -9,56 +9,96 @@ const Imagen = {
 
   async findByIdImage(id_imagen) {
     const sql = `
-      SELECT i.*, 
-             c.nombre_caracteristica, 
-             v.valor, 
-             v.url_imagen_caracteristica,
-             s.nombre_subcaracteristica,
-             s.imagen_subcaracteristica
-      FROM imagenes AS i
-      LEFT JOIN valores_caracteristicas AS v ON i.id_imagen = v.id_imagen
-      LEFT JOIN subcaracteristica AS s ON v.id_subcaracteristica = s.id_subcaracteristica
-      LEFT JOIN caracteristica AS c ON s.id_caracteristica = c.id_caracteristica
-      WHERE i.id_imagen = ?
+        SELECT 
+            i.*, 
+            c.id_caracteristica,
+            c.nombre_caracteristica, 
+            s.id_subcaracteristica,
+            s.nombre_subcaracteristica,
+            s.imagen_subcaracteristica,
+            v.valor, 
+            v.url_imagen_caracteristica, -- Asegurar que esta columna se incluya
+            cat.categoria AS nombre_categoria, 
+            cat.logo_categoria, 
+            m.marca AS nombre_marca, 
+            m.logo_marca,
+            gs.url_imagenes_solicitud,
+            gs.titulo_galeria,
+            g.nombre_grupo,
+            g.icono_grupo
+        FROM imagenes AS i
+        LEFT JOIN valores_caracteristicas AS v ON i.id_imagen = v.id_imagen
+        LEFT JOIN subcaracteristica AS s ON v.id_subcaracteristica = s.id_subcaracteristica
+        LEFT JOIN caracteristica AS c ON s.id_caracteristica = c.id_caracteristica
+        LEFT JOIN categoria AS cat ON i.id_categoria = cat.id_categoria
+        LEFT JOIN marca AS m ON i.id_marca = m.id_marca
+        LEFT JOIN galeria_solicitud AS gs ON i.id_galeria = gs.id_galeria_solicitud
+        LEFT JOIN grupos AS g ON i.id_grupo = g.id_grupo
+        WHERE i.id_imagen = ?;
     `;
+
     const [rows] = await pool.execute(sql, [id_imagen]);
 
     if (rows.length === 0) {
-      return null; // Si no hay resultados, devuelve null
+        return null; // Si no hay resultados, devuelve null
     }
 
-    // Procesar los resultados para agrupar características y subcaracterísticas
     const imagen = {
-      id_imagen: rows[0].id_imagen,
-      url_imagen: rows[0].url_imagen,
-      nombre_producto: rows[0].nombre_producto,
-      precio_producto: rows[0].precio_producto,
-      descripcion_producto: rows[0].descripcion_producto,
-      cantidad_producto: rows[0].cantidad_producto,
-      referencia_producto: rows[0].referencia_producto,
-      garantia_producto: rows[0].garantia_producto,
-      envio_producto: rows[0].envio_producto,
-      id_categoria: rows[0].id_categoria,
-      id_marca: rows[0].id_marca,
-      id_galeria: rows[0].id_galeria,
-      id_grupo: rows[0].id_grupo,
-      estado_producto: rows[0].estado_producto,
-      caracteristicas: [], // Inicializa un array para las características
+        id_imagen: rows[0].id_imagen,
+        url_imagen: rows[0].url_imagen,
+        nombre_producto: rows[0].nombre_producto,
+        precio_producto: rows[0].precio_producto,
+        descripcion_producto: rows[0].descripcion_producto,
+        cantidad_producto: rows[0].cantidad_producto,
+        referencia_producto: rows[0].referencia_producto,
+        garantia_producto: rows[0].garantia_producto,
+        envio_producto: rows[0].envio_producto,
+        estado_producto: rows[0].estado_producto,
+        id_categoria: rows[0].id_categoria,
+        id_marca: rows[0].id_marca,
+        id_galeria: rows[0].id_galeria,
+        id_grupo: rows[0].id_grupo,
+        nombre_categoria: rows[0].nombre_categoria,
+        logo_categoria: rows[0].logo_categoria,
+        nombre_marca: rows[0].nombre_marca,
+        logo_marca: rows[0].logo_marca,
+        titulo_galeria: rows[0].titulo_galeria,
+        imagenes_galeria: [...new Set(rows.map(row => row.url_imagenes_solicitud).filter(Boolean))],
+        caracteristicas: [],
+        nombre_grupo: rows[0].nombre_grupo,
+        icono_grupo: rows[0].icono_grupo,
     };
 
-    // Agregar características y subcaracterísticas al objeto de imagen
-    rows.forEach((row) => {
-      if (row.nombre_caracteristica && row.valor) {
-        imagen.caracteristicas.push({
-          nombre_caracteristica: row.nombre_caracteristica,
-          valor: row.valor,
-          nombre_subcaracteristica: row.nombre_subcaracteristica, // Incluye la subcaracterística
-        });
-      }
+    // Mapeo para agrupar características y subcaracterísticas con sus imágenes
+    const caracteristicaMap = new Map();
+
+    rows.forEach(row => {
+        if (row.id_caracteristica && row.nombre_caracteristica) {
+            if (!caracteristicaMap.has(row.id_caracteristica)) {
+                caracteristicaMap.set(row.id_caracteristica, {
+                    nombre_caracteristica: row.nombre_caracteristica,
+                    subcaracteristicas: [],
+                });
+            }
+
+            if (row.id_subcaracteristica && row.nombre_subcaracteristica) {
+                caracteristicaMap.get(row.id_caracteristica).subcaracteristicas.push({
+                    nombre_subcaracteristica: row.nombre_subcaracteristica,
+                    valor: row.valor,
+                    imagen_subcaracteristica: row.imagen_subcaracteristica,
+                    url_imagen_caracteristica: row.url_imagen_caracteristica, // Se agrega esta línea
+                });
+            }
+        }
     });
 
-    return imagen; // Devuelve la imagen con sus características y subcaracterísticas
-  },
+    // Convertir el Map en un array
+    imagen.caracteristicas = Array.from(caracteristicaMap.values());
+
+    return imagen;
+},
+
+
   getByCategoria: (id_categoria) => {
     return new Promise((resolve, reject) => {
       db.query(

@@ -100,7 +100,7 @@ controller.generarReporte = async (req, res) => {
 
 controller.obtenerReporteUsuarios = async (req, res) => {
   try {
-      const reporte = await ReporteService.obtenerReporteUsuarios();
+      const reporte = await ReporteService.listarReportes();
       res.status(200).json(reporte);
   } catch (error) {
       console.error("Error en el controlador al obtener el reporte de usuarios:", error);

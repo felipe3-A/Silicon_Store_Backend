@@ -7,5 +7,5 @@ router.get("/categoria_upload", CategoriaController.listarCategorias);
 router.put("/categoria_upload/:id_categoria", CategoriaController.editarCategoria);
 router.delete("/categoria_upload/:id", CategoriaController.eliminarCategoria);
 //LISTAR CATEGORIAS Y PRODUCTOS
-router.get("/categorias_con_productos", CategoriaController.listarCategoriasConProductos);
+router.get("/productos_por_categoria/:id_categoria", CategoriaController.listarProductosPorCategoria);
 module.exports = router;

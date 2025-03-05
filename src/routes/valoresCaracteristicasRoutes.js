@@ -4,6 +4,6 @@ const valoresCaracteristicaController = require('../controller/valoresCaracteris
 
 router.get('/valoresCaracteristicas', valoresCaracteristicaController.getAllValoresCaracteristicas);
 router.get('/producto/:id_imagen', valoresCaracteristicaController.getValoresByProducto);
-router.post('/valoresCaracteristicas', valoresCaracteristicaController.createValorCaracteristica);
+router.post('/valoresCaracteristicas',valoresCaracteristicaController.uploadImageCaracteristica, valoresCaracteristicaController.createValorCaracteristica);
 
 module.exports = router;

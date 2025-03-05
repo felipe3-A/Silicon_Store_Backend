@@ -25,13 +25,13 @@ controller.getAllCaracteristicas = async (req, res) => {
 // Función para crear una nueva característica
 controller.createCaracteristica = async (req, res) => {
   try {
-    const { nombre_caracteristica, id_categoria } = req.body;
+    const { nombre_caracteristica } = req.body;
 
-    if (!nombre_caracteristica || !id_categoria) {
+    if (!nombre_caracteristica) {
       return res.status(400).json({ message: "Todos los campos son requeridos" });
     }
 
-    const nuevaCaracteristica = { nombre_caracteristica, id_categoria };
+    const nuevaCaracteristica = { nombre_caracteristica };
     const result = await Caracteristica.createCaracteristica(nuevaCaracteristica);
 
     res.status(201).json({
